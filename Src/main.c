@@ -80,20 +80,27 @@ int milli_vel_error_sum = 0;
 
 void beep(uint8_t anzahl) {  // blocking function, do not use in main loop!
     for(uint8_t i = 0; i < anzahl; i++) {
-        buzzerFreq = 2;
+        buzzer(2);
         HAL_Delay(100);
-        buzzerFreq = 0;
+        buzzer(0);
         HAL_Delay(200);
     }
 }
 
+void buzzer(uint8_t freq) {  // blocking function, do not use in main loop!
+        buzzerFreq  = 0;
+#ifdef BUZZER_ON
+        buzzerFreq  = freq;
+#endif
+
+}
 
 void poweroff() {
     if (abs(speed) < 20) {
         buzzerPattern = 0;
         enable = 0;
         for (int i = 0; i < 8; i++) {
-            buzzerFreq = i;
+            buzzer(i);
             HAL_Delay(100);
         }
         HAL_GPIO_WritePin(OFF_PORT, OFF_PIN, 0);
@@ -140,17 +147,17 @@ int main(void) {
   HAL_ADC_Start(&hadc2);
 
   for (int i = 8; i >= 0; i--) {
-    buzzerFreq = i;
+    buzzer(i);
     HAL_Delay(100);
   }
-  buzzerFreq = 0;
+  buzzer(0);
 
   HAL_GPIO_WritePin(LED_PORT, LED_PIN, 1);
 
   int lastSpeedL = 0, lastSpeedR = 0;
   int speedL = 0, speedR = 0, speedRL = 0;
   // float direction = 1;
-  
+
   float adc1_filtered = 0.0;
   float adc2_filtered = 0.0;
 
@@ -352,7 +359,7 @@ int main(void) {
       // ####### CALC BOARD TEMPERATURE #######
       board_temp_adc_filtered = board_temp_adc_filtered * 0.99 + (float)adc_buffer.temp * 0.01;
       board_temp_deg_c = ((float)TEMP_CAL_HIGH_DEG_C - (float)TEMP_CAL_LOW_DEG_C) / ((float)TEMP_CAL_HIGH_ADC - (float)TEMP_CAL_LOW_ADC) * (board_temp_adc_filtered - (float)TEMP_CAL_LOW_ADC) + (float)TEMP_CAL_LOW_DEG_C;
-      
+
       // ####### DEBUG SERIAL OUT #######
       #ifdef CONTROL_ADC
         setScopeChannel(0, (int)adc1_filtered);  // 1: ADC1
@@ -380,19 +387,19 @@ int main(void) {
     if ((TEMP_POWEROFF_ENABLE && board_temp_deg_c >= TEMP_POWEROFF && abs(speed) < 20) || (batteryVoltage < ((float)BAT_LOW_DEAD * (float)BAT_NUMBER_OF_CELLS) && abs(speed) < 20)) {  // poweroff before mainboard burns OR low bat 3
       poweroff();
     } else if (TEMP_WARNING_ENABLE && board_temp_deg_c >= TEMP_WARNING) {  // beep if mainboard gets hot
-      buzzerFreq = 4;
+      buzzer(4);
       buzzerPattern = 1;
     } else if (batteryVoltage < ((float)BAT_LOW_LVL1 * (float)BAT_NUMBER_OF_CELLS) && batteryVoltage > ((float)BAT_LOW_LVL2 * (float)BAT_NUMBER_OF_CELLS) && BAT_LOW_LVL1_ENABLE) {  // low bat 1: slow beep
-      buzzerFreq = 5;
+      buzzer(5);
       buzzerPattern = 42;
     } else if (batteryVoltage < ((float)BAT_LOW_LVL2 * (float)BAT_NUMBER_OF_CELLS) && batteryVoltage > ((float)BAT_LOW_DEAD * (float)BAT_NUMBER_OF_CELLS) && BAT_LOW_LVL2_ENABLE) {  // low bat 2: fast beep
-      buzzerFreq = 5;
+      buzzer(5);
       buzzerPattern = 6;
     } else if (BEEPS_BACKWARD && speed < -50) {  // backward beep
-      buzzerFreq = 5;
+      buzzer(5);
       buzzerPattern = 1;
     } else {  // do not beep
-      buzzerFreq = 0;
+      buzzer(0);
       buzzerPattern = 0;
     }
 
