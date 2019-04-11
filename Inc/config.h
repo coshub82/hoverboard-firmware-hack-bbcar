@@ -88,6 +88,7 @@
 #define INVERT_R_DIRECTION
 #define INVERT_L_DIRECTION
 #define BEEPS_BACKWARD 1    // 0 or 1
+//#define BUZZER_ON  //uncomment to have buzzer ON
 
 //Turbo boost at high speeds while button1 is pressed:
 //#define ADDITIONAL_CODE \
