@@ -8,3 +8,5 @@ typedef struct{
    unsigned char data[4];
    uint32_t value;
 } HandleTypeDef_Parsermanager;
+
+uint8_t UartParser(HandleTypeDef_Parsermanager *P,char SerialIn);
