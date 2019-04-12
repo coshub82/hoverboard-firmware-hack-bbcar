@@ -30,15 +30,7 @@ This state machine is designed to be non blockant when character flow and need t
 
 //char buf[50] = {'@','S',' ','1','0',0x0A,'@','O',' ','1','1','0','0',0x0A,'@','M',0x0A,'@','T',' ','2','2','0',0x0A,'@','T',' ','2','2','0',0x0A};
 
-typedef struct{
-   uint8_t state;
-   uint8_t index;
-   uint8_t command;
-   unsigned char data[4];
-   uint32_t value;
-} HandleTypeDef_Parsermanager;
-
-HandleTypeDef_Parsermanager parsermanager;
+//HandleTypeDef_Parsermanager parsermanager;
 
 uint8_t UartParser(HandleTypeDef_Parsermanager *P,char SerialIn)
 {
